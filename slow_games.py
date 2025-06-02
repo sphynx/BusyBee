@@ -57,9 +57,12 @@ class LichessSlowGamesChecker(Cog):
         :param lichess: Lichess username
         """
         discord_id = int(ctx.author.id)
-        self.users_db.add_user(lichess, discord_id)
 
-        msg = f"Hi {ctx.author.name}! Your Lichess account '{lichess}' was linked to your Discord id: {discord_id}"
+        if self.user_checker.does_user_exist(lichess):
+            self.users_db.add_user(lichess, discord_id)
+            msg = f"Hi {ctx.author.name}! Your Lichess account '{lichess}' was linked to your Discord id: {discord_id}"
+        else:
+            msg = f"Hi {ctx.author.name}! Your Lichess account '{lichess}' does not seem to exist"
 
         print(msg)
         await ctx.send(msg)

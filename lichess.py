@@ -40,9 +40,8 @@ class PlayingUser:
             info = msg['playing']
 
             if not isinstance(info, dict):
-                print(f"Didn't get the game data, just this: {msg}")
-
-                # We can't determine the time control, so give up for this user:
+                print(f"Can't get time control from Lichess: {msg}")
+                # We can't determine the time control, likely it's blitz, so give up for this user:
                 return None
 
             clock = info.get('clock', '')
@@ -78,6 +77,11 @@ class LichessUserChecker:
     def __init__(self, users: tuple[str, ...] = ()):
         self.token = TokenAuth()
         self.users = list(users)
+
+    def does_user_exist(self, user: str) -> bool:
+        print(f"{datetime.now()}: checking existence of user '{user}' on Lichess")
+        url = f"https://lichess.org/api/user/{user}"
+        return requests.get(url, auth=self.token).ok
 
     def check_slow_games(self) -> list[PlayingUser]:
         print(f"{datetime.now()}: checking games of {len(self.users)} users on Lichess")
