@@ -11,15 +11,16 @@ class Users:
 
         if self.users_file.exists():
             for line in self.users_file.read_text().split("\n"):
-                parts = line.split(",")
+                if line:
+                    parts = line.split(",")
 
-                if len(line) > 0 and len(parts) != 2:
-                    raise ValueError("Unexpected line format, expected: LICHESS_USERNAME,DISCORD_ID")
+                    if len(parts) != 2:
+                        raise ValueError("Unexpected line format, expected: LICHESS_USERNAME,DISCORD_ID")
 
-                lichess_username = parts[0]
-                discord_id = int(parts[1])
+                    lichess_username = parts[0]
+                    discord_id = int(parts[1])
 
-                self.users[lichess_username] = discord_id
+                    self.users[lichess_username] = discord_id
 
             print(f"Loaded {len(self.users)} users from DB")
 
