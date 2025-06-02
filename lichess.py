@@ -83,6 +83,35 @@ class LichessUserChecker:
         url = f"https://lichess.org/api/user/{user}"
         return requests.get(url, auth=self.token).ok
 
+    def get_current_game(self, user: str) -> Optional[PlayingUser]:
+        print(f"{datetime.now()}: getting current game of user '{user}'")
+        url = f"https://lichess.org/api/user/{user}/current-game"
+        params = {
+            'moves': 'false',
+            'evals': 'false',
+            'opening': 'false',
+            'clocks': 'false',
+        }
+
+        headers = {'Accept': 'application/json'}
+        game_data = requests.get(url, auth=self.token, params=params, headers=headers).json()
+
+        game_id = game_data.get("id")
+        clock = game_data.get("clock")
+        if clock is not None:
+            start = int(clock.get("initial", 0) / 60)
+            increment = clock.get("increment", 0)
+        else:
+            start = 0
+            increment = 0
+
+        status = game_data.get("status")
+
+        if game_id is not None and status == "started":
+            return PlayingUser(name=user, game_id=game_id, starting_time=start, increment=increment)
+        else:
+            return None
+
     def check_slow_games(self) -> list[PlayingUser]:
         print(f"{datetime.now()}: checking games of {len(self.users)} users on Lichess")
 
@@ -103,7 +132,13 @@ class LichessUserChecker:
 
         res = []
         for s in statuses:
-            playing_user = PlayingUser.from_lichess(s)
+            # Check if we got the game metadata correctly:
+            if "playing" in s and not isinstance(s["playing"], dict):
+                # We didn't, so get the current game of the user
+                playing_user = self.get_current_game(s.get('id'))
+            else:
+                playing_user = PlayingUser.from_lichess(s)
+
             if playing_user is not None and playing_user.is_slower:
                 res.append(playing_user)
 
@@ -123,3 +158,5 @@ if __name__ == '__main__':
     else:
         for u in playing_users:
             print(f"{u.name} is playing a slower game: {u.clock}, URL: {u.game_url}")
+
+    print(checker.get_current_game("sphynx"))
