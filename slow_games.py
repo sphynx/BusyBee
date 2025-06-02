@@ -7,7 +7,7 @@ from discord.ext.tasks import loop
 from lichess import LichessUserChecker
 from users import Users
 
-CHECK_PERIOD = 60 # seconds
+CHECK_PERIOD = 120  # seconds
 
 POSTED_GAMES_FILE = "data/posted_games.csv"
 
