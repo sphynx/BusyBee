@@ -1,8 +1,8 @@
 import os
 from pathlib import Path
 
-from discord.ext import tasks
-from discord.ext.commands import Cog
+from discord.ext.commands import Cog, command
+from discord.ext.tasks import loop
 
 from lichess import LichessUserChecker
 from users import Users
@@ -51,10 +51,23 @@ class LichessSlowGamesChecker(Cog):
         print(f"Starting SlowGamesChecker with interval: {CHECK_PERIOD}s")
         self.lichess_checker.start()
 
+    @command()
+    async def link(self, ctx, lichess: str):
+        """Link your Discord to your Lichess username and monitor your slow games.
+        :param lichess: Lichess username
+        """
+        discord_id = int(ctx.author.id)
+        self.users_db.add_user(lichess, discord_id)
+
+        msg = f"Hi {ctx.author.name}! Your Lichess account '{lichess}' was linked to your Discord id: {discord_id}"
+
+        print(msg)
+        await ctx.send(msg)
+
     def cog_unload(self):
         self.lichess_checker.cancel()
 
-    @tasks.loop(seconds=CHECK_PERIOD)
+    @loop(seconds=CHECK_PERIOD)
     async def lichess_checker(self):
         playing_users = self.user_checker.check_slow_games()
 

@@ -26,6 +26,7 @@ class Users:
 
     def add_user(self, lichess: str, discord_id: int) -> None:
         self.users[lichess] = discord_id
+        self._append_user(lichess, discord_id)
 
     def discord_to_lichess(self, discord_id: int) -> Optional[str]:
         for k, v in self.users.items():
