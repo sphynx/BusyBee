@@ -80,7 +80,7 @@ class LichessUserChecker:
         self.users = list(users)
 
     def check_slow_games(self) -> list[PlayingUser]:
-        print(f"{datetime.now()}: checking {len(self.users)} users: {self.users}")
+        print(f"{datetime.now()}: checking games of {len(self.users)} users on Lichess")
 
         url = f"https://lichess.org/api/users/status"
 
@@ -107,7 +107,7 @@ class LichessUserChecker:
 
 
 if __name__ == '__main__':
-    users = ("sphynx", "arjunpyda", "jdannan", "e_rider", "sofaking83")
+    users = ("sphynx", "jdannan", "e_rider")
 
     load_dotenv()
 
