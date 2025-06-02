@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from discord import Intents
 from dotenv import load_dotenv
@@ -12,5 +13,11 @@ if __name__ == '__main__':
     intents = Intents.default()
     intents.message_content = True
 
+    # Create a directory for storing the bots data
+    path = Path("data")
+    path.mkdir(parents=True, exist_ok=True)
+
     client = BusyBee(intents=intents, command_prefix="$")
     client.run(TOKEN)
+
+
