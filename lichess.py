@@ -23,9 +23,7 @@ class TokenAuth(AuthBase):
         return request
 
 
-LICHESS_TOKEN = TokenAuth()
-
-SLOW_THRESHOLD = 15
+SLOW_THRESHOLD = 30
 
 @dataclass(frozen=True)
 class PlayingUser:
@@ -74,8 +72,6 @@ class PlayingUser:
     @property
     def clock(self) -> str:
         return f"{self.starting_time}+{self.increment}"
-
-
 
 
 class LichessUserChecker:

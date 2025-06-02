@@ -42,6 +42,7 @@ class LichessSlowGamesChecker(Cog):
         thread_id = os.getenv("SLOW_GAMES_THREAD_ID")
         self.thread_to_post = self.bot.get_channel(int(thread_id))
 
+        print(f"Starting SlowGamesChecker with interval: {CHECK_PERIOD}s")
         self.lichess_checker.start()
 
     def cog_unload(self):
