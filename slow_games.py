@@ -59,10 +59,40 @@ class LichessSlowGamesChecker(Cog):
         discord_id = int(ctx.author.id)
 
         if self.user_checker.does_user_exist(lichess):
-            self.users_db.add_user(lichess, discord_id)
-            msg = f"Hi {ctx.author.name}! Your Lichess account '{lichess}' was linked to your Discord id: {discord_id}"
+            added = self.users_db.add_user(lichess, discord_id)
+            if added:
+                msg = f"Hi {ctx.author.name}! Your Lichess account '{lichess}' was linked to your Discord id: {discord_id}"
+            else:
+                msg = f"Hi {ctx.author.name}! Your Lichess account '{lichess}' is already in the database"
         else:
             msg = f"Hi {ctx.author.name}! Your Lichess account '{lichess}' does not seem to exist"
+
+        print(msg)
+        await ctx.send(msg)
+
+    @command()
+    async def follow(self, ctx, lichess: str):
+        """Add any Lichess username to monitor their games.
+        :param lichess: Lichess username
+        """
+        if self.user_checker.does_user_exist(lichess):
+            added = self.users_db.add_user(lichess, None)
+            if added:
+                msg = f"Hi {ctx.author.name}! Lichess account '{lichess}' is now monitored"
+            else:
+                msg = f"Hi {ctx.author.name}! Lichess account '{lichess}' is already in the database"
+        else:
+            msg = f"Hi {ctx.author.name}! Lichess account '{lichess}' does not seem to exist"
+
+        print(msg)
+        await ctx.send(msg)
+
+    @command()
+    async def list(self, ctx):
+        """Lists all monitored Lichess usernames"""
+        users = self.users_db.lichess_usernames()
+        users_str = ', '.join(users)
+        msg = f"{len(users)} users are monitored: {users_str}"
 
         print(msg)
         await ctx.send(msg)
@@ -78,7 +108,12 @@ class LichessSlowGamesChecker(Cog):
             if not self.games_posted.game_exists(u.game_id):
                 lichess = u.name
                 discord_id = self.users_db.lichess_to_discord(lichess)
-                name = f"<@{discord_id}> ({lichess})"
+
+                if discord_id is None:
+                    name = lichess
+                else:
+                    name = f"<@{discord_id}> ({lichess})"
+
                 msg = f"{name} is playing a slower game ({u.clock}) on Lichess, watch here: {u.game_url}"
 
                 await self.thread_to_post.send(msg)
