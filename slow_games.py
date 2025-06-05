@@ -61,6 +61,7 @@ class LichessSlowGamesChecker(Cog):
         if self.user_checker.does_user_exist(lichess):
             added = self.users_db.add_user(lichess, discord_id)
             if added:
+                self.user_checker.add_user(lichess)
                 msg = f"Hi {ctx.author.name}! Your Lichess account '{lichess}' was linked to your Discord id: {discord_id}"
             else:
                 msg = f"Hi {ctx.author.name}! Your Lichess account '{lichess}' is already in the database"
@@ -79,6 +80,7 @@ class LichessSlowGamesChecker(Cog):
             added = self.users_db.add_user(lichess, None)
             if added:
                 msg = f"Hi {ctx.author.name}! Lichess account '{lichess}' is now monitored"
+                self.user_checker.add_user(lichess)
             else:
                 msg = f"Hi {ctx.author.name}! Lichess account '{lichess}' is already in the database"
         else:

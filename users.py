@@ -19,7 +19,7 @@ class Users:
                         raise ValueError("Unexpected line format, expected: LICHESS_USERNAME,DISCORD_ID")
 
                     lichess_username = parts[0]
-                    discord_id = None if parts == "" else int(parts[1])
+                    discord_id = None if parts[1] == "" else int(parts[1])
 
                     self.users[lichess_username] = discord_id
 

@@ -78,6 +78,9 @@ class LichessUserChecker:
         self.token = TokenAuth()
         self.users = list(users)
 
+    def add_user(self, user: str) -> None:
+        self.users.append(user)
+
     def does_user_exist(self, user: str) -> bool:
         print(f"{datetime.now()}: checking existence of user '{user}' on Lichess")
         url = f"https://lichess.org/api/user/{user}"
