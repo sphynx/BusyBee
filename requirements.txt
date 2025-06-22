@@ -2,3 +2,4 @@ discord.py >= 2.5.0
 dotenv >= 0.9
 requests >= 2.32
 chess >= 1.11
+cairosvg >= 2.8

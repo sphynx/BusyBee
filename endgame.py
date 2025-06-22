@@ -1,11 +1,9 @@
 import re
 from pathlib import Path
-
 from urllib.parse import quote
-from chess import Board
-from discord.ext import commands
-from discord.ext.commands import Cog, command
 
+from chess import Board
+from discord.ext.commands import Cog, command
 from discord.ext.commands.errors import MissingRequiredArgument
 
 URL_PATTERN = "https://chess-endgame-trainer.mooo.com/fen/FEN_STRING/TARGET"
@@ -22,8 +20,6 @@ class Endgame(Cog):
         Opens an position specified by FEN to play in the Endgame Trainer app
         :param arg: FEN [white/black] [win/draw]
         """
-
-        orig_arg = arg
 
         # Let's try to parse the arguments
         # We support: mandatory FEN + optional arguments: "black", "white", "win", "draw"
