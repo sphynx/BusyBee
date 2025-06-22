@@ -2,12 +2,16 @@ import re
 from pathlib import Path
 from urllib.parse import quote
 
+import discord
 from chess import Board
 from discord.ext.commands import Cog, command
 from discord.ext.commands.errors import MissingRequiredArgument
 
+from img import board_to_png
+
 URL_PATTERN = "https://chess-endgame-trainer.mooo.com/fen/FEN_STRING/TARGET"
 FENS_FILE = "data/endgames.txt"
+IMG_FILE = "data/endgame.png"
 
 class Endgame(Cog):
     def __init__(self, bot):
@@ -53,13 +57,17 @@ class Endgame(Cog):
 
         try:
             # Validate the FEN using `chess` package:
-            _ = Board(fen=fen)
+            board = Board(fen=fen)
+            board_to_png(board, IMG_FILE)
         except ValueError as e:
             errors.append(f"You have to specify a valid FEN of the position: {e}")
 
         if errors:
             errors_msg = '. '.join(errors)
             msg = f"There was a problem with your command: {errors_msg}"
+            print(msg)
+            await ctx.send(msg)
+
         else:
             url = URL_PATTERN
             url = url.replace("FEN_STRING", fen)
@@ -78,10 +86,10 @@ class Endgame(Cog):
             quoted_url = quote(url, safe=":/?=")
 
             self.log_url(quoted_url)
-            msg = f"Please play your position in Endgame Trainer: {quoted_url}"
 
-        print(msg)
-        await ctx.send(msg)
+            file = discord.File(IMG_FILE)
+            msg = f"Please play your position in Endgame Trainer: {quoted_url}"
+            await ctx.send(msg, file=file)
 
     @endgame.error
     async def info_error(self, ctx, error):
@@ -90,7 +98,6 @@ class Endgame(Cog):
                            'for example: `$endgame R7/6k1/P5p1/5p1p/5P1P/r5P1/5K2/8 b - - 0 1`')
         else:
             await ctx.send(f'There was an error with the command: {str(error)}')
-
 
     def log_url(self, url: str) -> None:
         with self.data_file.open("a") as f:
